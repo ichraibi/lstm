@@ -1,3 +1,8 @@
+This code has been forked from the project of [nicodjimenez/lstm](https://github.com/nicodjimenez/lstm)
+who based his work on the article "Lipton, Z. C., Berkowitz, J., & Elkan, C. (2015). A critical review of recurrent neural networks for sequence learning. arXiv preprint arXiv:1506.00019."
+
+Below, the original Readme.md file : 
+
 # lstm
 A basic lstm network can be written from scratch in a few hundred lines of python, yet most of us have a hard time figuring out how lstm's actually work.  The original Neural Computation [paper](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=3&cad=rja&uact=8&ved=0CDAQFjACahUKEwj1iZLX5efGAhVMpIgKHbv3DiI&url=http%3A%2F%2Fdeeplearning.cs.cmu.edu%2Fpdfs%2FHochreiter97_lstm.pdf&ei=ZuirVfW-GMzIogS777uQAg&usg=AFQjCNGoFvqrva4rDCNIcqNe_SiPL_VPxg&sig2=ZYnsGpdfHjRbK8xdr1thBg&bvm=bv.98197061,d.cGU) is too technical for non experts.  Most blogs online on the topic seem to be written by people
 who have never implemented lstm's for people who will not implement them either.  Other blogs are written by experts (like this [blog post](http://karpathy.github.io/2015/05/21/rnn-effectiveness/)) and lack simplified illustrative source code that actually does something.  The [Apollo](https://github.com/Russell91/apollo) library built on top of caffe is terrific and features a fast lstm implementation.  However, the downside of efficient implementations is that the source code is hard to follow.
