@@ -18,9 +18,34 @@ class LstmParam:
         concat_len = x_dim + mem_cell_ct
         # weight matrices
         self.wg = rand_arr(-0.1, 0.1, mem_cell_ct, concat_len)
-        self.wi = rand_arr(-0.1, 0.1, mem_cell_ct, concat_len) 
+        print "\n\n---> type(self.wg) : ", type(self.wg)
+        #print "---> self.wg[0] : ", self.wg[0]
+        print "---> len(self.wg[0]) : ", len(self.wg[0])
+        print "---> type(self.wg[0]) : ", type(self.wg[0])
+        print "---> type(self.wg[0][0]) : ", type(self.wg[0][0])
+
+        self.wi = rand_arr(-0.1, 0.1, mem_cell_ct, concat_len)
+        print "\n\n---> type(self.wi) : ", type(self.wi)
+        # print "---> self.wg[0] : ", self.wg[0]
+        print "---> len(self.wi[0]) : ", len(self.wi[0])
+        print "---> type(self.wi[0]) : ", type(self.wi[0])
+        print "---> type(self.wi[0][0]) : ", type(self.wi[0][0])
+
         self.wf = rand_arr(-0.1, 0.1, mem_cell_ct, concat_len)
+        print "\n\n---> type(self.wf) : ", type(self.wf)
+        # print "---> self.wg[0] : ", self.wg[0]
+        print "---> len(self.wf[0]) : ", len(self.wf[0])
+        print "---> type(self.wf[0]) : ", type(self.wf[0])
+        print "---> type(self.wf[0][0]) : ", type(self.wf[0][0])
+
         self.wo = rand_arr(-0.1, 0.1, mem_cell_ct, concat_len)
+        print "\n\n---> type(self.wo) : ", type(self.wo)
+        # print "---> self.wg[0] : ", self.wg[0]
+        print "---> len(self.wo[0]) : ", len(self.wo[0])
+        print "---> type(self.wo[0]) : ", type(self.wo[0])
+        print "---> type(self.wo[0][0]) : ", type(self.wo[0][0])
+        print "\n\n"
+
         # bias terms
         self.bg = rand_arr(-0.1, 0.1, mem_cell_ct) 
         self.bi = rand_arr(-0.1, 0.1, mem_cell_ct) 
@@ -57,12 +82,12 @@ class LstmParam:
 
 class LstmState:
     def __init__(self, mem_cell_ct, x_dim):
-        self.g = np.zeros(mem_cell_ct)
-        self.i = np.zeros(mem_cell_ct)
-        self.f = np.zeros(mem_cell_ct)
-        self.o = np.zeros(mem_cell_ct)
-        self.s = np.zeros(mem_cell_ct)
-        self.h = np.zeros(mem_cell_ct)
+        self.g = np.zeros(mem_cell_ct) #Vector containing the value of the block input of each memory cell
+        self.i = np.zeros(mem_cell_ct) # Vector containing the value of the input gate of each memory cell
+        self.f = np.zeros(mem_cell_ct) #Vector containing the value of the forget gate of each memory cell
+        self.o = np.zeros(mem_cell_ct) #Vector containing the value of the output gate of each memory cell
+        self.s = np.zeros(mem_cell_ct)# Vector containing the value of the node of each memory celle in a layer
+        self.h = np.zeros(mem_cell_ct)# Vector containing the value of the hidden layer
         self.bottom_diff_h = np.zeros_like(self.h)
         self.bottom_diff_s = np.zeros_like(self.s)
         self.bottom_diff_x = np.zeros(x_dim)
@@ -75,25 +100,40 @@ class LstmNode:
         # non-recurrent input to node
         self.x = None
         # non-recurrent input concatenated with recurrent input
+        # input non recurrente concatene avec l'inpur recurrent
         self.xc = None
 
-    def bottom_data_is(self, x, s_prev = None, h_prev = None):
+    def  bottom_data_is(self, x, s_prev = None, h_prev = None):
+        print " ---- in bottom_data_is"
         # if this is the first lstm node in the network
         if s_prev == None: s_prev = np.zeros_like(self.state.s)
+        #print " ---- self.state.s : ", self.state.s
+        print " ---- len(self.state.s) : ", len(self.state.s)
+        print " ---- type(self.state.s) : ", type(self.state.s)
         if h_prev == None: h_prev = np.zeros_like(self.state.h)
+        #print " ---- self.state.h : ", self.state.h
+        print " ---- len(self.state.h) : ", len(self.state.h)
+        print " ---- type(self.state.h) : ", type(self.state.h)
         # save data for use in backprop
         self.s_prev = s_prev
         self.h_prev = h_prev
+        #print " ---- s_prev : ",s_prev
+        print " ---- len(s_prev) : ",len(s_prev)
+        print " ---- type(s_prev) : ",type(s_prev)
 
+
+        #print " ---- h_prev : ",h_prev
+        print " ---- len(h_prev) : ", len(h_prev)
+        print " ---- type(h_prev) : ", type(h_prev)
         # concatenate x(t) and h(t-1)
-        xc = np.hstack((x,  h_prev))
-        self.state.g = np.tanh(np.dot(self.param.wg, xc) + self.param.bg)
+        xc = np.hstack((x,  h_prev))#va empiler ces deux array en une seul, x, puis h_prev
+        self.state.g = np.tanh(np.dot(self.param.wg, xc) + self.param.bg) # MAj du block input
         self.state.i = sigmoid(np.dot(self.param.wi, xc) + self.param.bi)
         self.state.f = sigmoid(np.dot(self.param.wf, xc) + self.param.bf)
         self.state.o = sigmoid(np.dot(self.param.wo, xc) + self.param.bo)
-        self.state.s = self.state.g * self.state.i + s_prev * self.state.f
-        self.state.h = self.state.s * self.state.o
-        self.x = x
+        self.state.s = self.state.g * self.state.i + s_prev * self.state.f #MAJ de l'etat de la cellule en fonction de l'etat precedent et des portes
+        self.state.h = self.state.s * self.state.o # sortie du bloc
+        self.x = x #input recurrente, le bloc/noeud recoit sa propre entree
         self.xc = xc
     
     def top_diff_is(self, top_diff_h, top_diff_s):
@@ -172,15 +212,21 @@ class LstmNetwork():
         self.x_list = []
 
     def x_list_add(self, x):
+        print " -- in x_list_add : "
         self.x_list.append(x)
+        print " -- len(self.x_list) : ", len(self.x_list) , "  - len(self.lstm_node_list) : ", len(self.lstm_node_list)
         if len(self.x_list) > len(self.lstm_node_list):
             # need to add new lstm node, create new state mem
+            print " -- NEW NODE"
+            print " -- self.lstm_param.mem_cell_ct : ", self.lstm_param.mem_cell_ct
+            print " -- self.lstm_param.x_dim : ", self.lstm_param.x_dim
             lstm_state = LstmState(self.lstm_param.mem_cell_ct, self.lstm_param.x_dim)
+            #print " -- lstm_state : ", lstm_state
             self.lstm_node_list.append(LstmNode(self.lstm_param, lstm_state))
 
         # get index of most recent x input
         idx = len(self.x_list) - 1
-        if idx == 0:
+        if idx == 0 :
             # no recurrent inputs yet
             self.lstm_node_list[idx].bottom_data_is(x)
         else:
